@@ -64,9 +64,6 @@ class LJTickDAC:
                         [49, binaryB // 256, binaryB % 256],
                         SDAPinNum=self.sdaPin, SCLPinNum=self.sclPin)
 
-
-
-
 def openFirstFound():
     """Opens first found LabJack U6, U3 or UE9. Returns the device object on
     success or None if not found.
@@ -118,7 +115,7 @@ def boundGauss(object):
 
     return int(val)
 
-amp = 5
+amp = input("Enter the desired amplitude in volts (default is 5): ")
 
 # create a square wave that changes in frequency with time
 def randomSquareWave(total_num_points, period_object):
@@ -171,24 +168,97 @@ tdac6 = LJTickDAC(dev, 14)
 tdac7 = LJTickDAC(dev, 16)
 tdac8 = LJTickDAC(dev, 18)
 
-a = time.time()
-for i in range(n):
-    # 8 channels at ~45 Hz (FIO0 - EIO2)
-    # (a_side, b_side) of turbulence box
-    tdac1.update(r1[i], r1[i])
-    tdac2.update(r2[i], r2[i])
-    tdac3.update(r3[i], r3[i])
-    tdac4.update(r4[i], r4[i])
+mode = input("Select the desired test mode: \n" + "(1) Random \n" + "(2) Linear \n" + "(3) Constant \n")
 
-    # 4 channels at ~22.5 Hz (EIO4 - EIO6)
-    tdac5.update(r5[i], r5[i])
-    tdac6.update(r6[i], r6[i])
+if mode == "2":
+    linform1 = []
+    linform2 = []
+    linform3 = []
+    linform4 = []
 
-    # 2 channels at ~15 Hz (CIO0)
-    tdac7.update(r7[i], r7[i])
+    linform1 += [amp, 0] * n // 2
 
-    # 2 channels at ~11.25 Hz (CIO2)
-    tdac8.update(r8[i], r8[i])
+    linform2 += [amp, amp, 0, 0] * n // 4
+    
+    linform3 += [amp, amp, amp, 0, 0, 0] * n // 6
+
+    linform4 += [amp, amp, amp, amp, 0, 0, 0, 0] * n // 8
+
+if mode == "3":
+    waveform = []
+    pick = input("Select the desired frequency in Hz: \n" + "1. ~45 Hz \n" + "2. ~22.5 Hz\n " + "3. 15 Hz" + "4. 11.25 Hz")
+
+    if pick == "1":
+        waveform += [amp, 0] * n//2
+
+    if pick == "2":
+        waveform += [amp, amp, 0, 0] * n//4
+
+    if pick == "3":
+        waveform += [amp, amp, amp, 0, 0, 0] * n//6
+
+    if pick == "4":
+        waveform += [amp, amp, amp, amp, 0, 0, 0, 0] * n//8
+
+
+
+if mode == "1":
+    a = time.time()
+    for i in range(n):
+        # 8 channels at ~45 Hz (FIO0 - EIO2)
+        # (a_side, b_side) of turbulence box
+        tdac1.update(r1[i], r1[i])
+        tdac2.update(r2[i], r2[i])
+        tdac3.update(r3[i], r3[i])
+        tdac4.update(r4[i], r4[i])
+
+        # 4 channels at ~22.5 Hz (EIO4 - EIO6)
+        tdac5.update(r5[i], r5[i])
+        tdac6.update(r6[i], r6[i])
+
+        # 2 channels at ~15 Hz (CIO0)
+        tdac7.update(r7[i], r7[i])
+
+        # 2 channels at ~11.25 Hz (CIO2)
+        tdac8.update(r8[i], r8[i])
+
+if mode == "2":
+    a = time.time()
+    for i in range(n):
+        # 4 channels at ~45 Hz
+        # (a_side, b_side) of turbulence box
+        tdac1.update(linform1[i], linform1[i])
+        tdac2.update(linform1[i], linform1[i])
+
+        # 4 channels at ~22.5 Hz
+        tdac3.update(linform2[i], linform2[i])
+        tdac4.update(linform2[i], linform2[i])
+
+        # 4 channels at ~15 Hz
+        tdac5.update(linform3[i], linform3[i])
+        tdac6.update(linform3[i], linform3[i])
+
+        # 4 channels at ~11.25 Hz
+        tdac7.update(linform4[i], linform4[i])
+        tdac8.update(linform4[i], linform4[i])
+
+if mode == "3":
+    a = time.time()
+    for i in range(n):
+        # all channels at selected frequency
+        # (a_side, b_side) of turbulence box
+        tdac1.update(waveform[i], waveform[i])
+        tdac2.update(waveform[i], waveform[i])
+
+        tdac3.update(waveform[i], waveform[i])
+        tdac4.update(waveform[i], waveform[i])
+
+        tdac5.update(waveform[i], waveform[i])
+        tdac6.update(waveform[i], waveform[i])
+
+        tdac7.update(waveform[i], waveform[i])
+        tdac8.update(waveform[i], waveform[i])
 
 print(time.time() - a)
+
 dev.close()
