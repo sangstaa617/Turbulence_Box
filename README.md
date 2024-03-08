@@ -1,9 +1,9 @@
 This code controls the 64 speakers in the turbulence box. 
 It uses a LabJack U6 to generate a digital square wave and LJTick DAC to send an analog signal to the speakers. 
 The minimum update time is limited by the LJtickDACs and totals ~11.5 ms, meaning the maximum frequency when all the DACs are being used is ~45 Hz
-The default amplitude is 5 V which generates ~23 V P2P 25 V is the calculated maximum for the speakers
-The duration of the test is a user input
-The three modes for the code are Random, Linear, and Constant
+The default amplitude is 5 V which generates ~23 V P2P 25 V is the calculated maximum for the speakers.
+The duration of the test is a user input.
+The three modes for the code are Random, Linear, and Constant.
 
   Random: 
     - the frequency is randomly selected with a 50% chance of ~45 Hz, 25% chance of ~22.5 Hz, 12.5% chance of ~15 Hz, and a 12.5% chance of ~11.25 Hz
